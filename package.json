@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/baibai-lee/learn-webgl/issues"
   },
-  "homepage": "https://github.com/baibai-lee/learn-webgl#readme"
+  "homepage": "https://github.com/baibai-lee/learn-webgl#readme",
+  "dependencies": {
+    "webgl-utils": "^1.0.1"
+  }
 }
