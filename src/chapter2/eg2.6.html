@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- Hello World -->
+    <title>eg2.6</title>
+</head>
+
+<body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+        please use a browser that support canvas
+    </canvas>
+
+    <script src="../../assets/lib/webgl-utils.js"></script>
+    <script src="../../assets/lib/webgl-debug.js"></script>
+    <script src="../../assets/lib/cuon-utils.js"></script>
+    <script>
+        // 顶点着色器
+        var VSHADER_SOURCE =
+            'attribute vec4 a_Position;\n' + // attribute variable
+            'void main() {\n' +
+            '  gl_Position = a_Position;\n' +
+            '  gl_PointSize = 10.0;\n' +
+            '}\n';
+
+        // 片元着色器
+        var FSHADER_SOURCE =
+            'void main() {\n' +
+            '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+            '}\n';
+
+        function main() {
+            // 获取canvas
+            var canvas = document.getElementById('webgl');
+
+            // 获取webgl上下文
+            var gl = getWebGLContext(canvas);
+            if (!gl) {
+                console.log('Failed to get the rendering context for WebGL');
+                return;
+            }
+
+            // 初始化着色器
+            if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+                console.log('Failed to intialize shaders.');
+                return;
+            }
+
+            // 获取 attribute 变量的存储位置
+            var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+            // console.log(a_Position) // 0
+            if (a_Position < 0) {
+                console.log('Failed to get the storage location of a_Position');
+                return;
+            }
+
+            // 将顶点位置传输给 attribute 变量
+            gl.vertexAttrib3f(a_Position, 0.0, 0.0, 0.0);
+            // gl.vertexAttrib3f(a_Position, 0.5, 0.0, 0.0);
+            // gl.vertexAttrib3f(a_Position, 0.0, 0.5, 0.0);
+
+            // 设置canvas背景色
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+            // 清除canvas
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // 绘制
+            gl.drawArrays(gl.POINTS, 0, 1);
+        }
+    </script>
+</body>
+
+</html>
