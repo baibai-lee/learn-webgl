@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- 绘制方形 书中无此实例 -->
+    <title>eg3.3.1</title>
+</head>
+
+<body onload="main()">
+    <canvas id="webgl" width="400" height="400">
+        please use a browser that support canvas
+    </canvas>
+
+    <script src="../../assets/lib/webgl-utils.js"></script>
+    <script src="../../assets/lib/webgl-debug.js"></script>
+    <script src="../../assets/lib/cuon-utils.js"></script>
+    <script>
+        // 顶点着色器
+        var VSHADER_SOURCE =
+            'attribute vec4 a_Position;\n' +
+            'void main() {\n' +
+            '  gl_Position = a_Position;\n' +
+            '  // gl_PointSize = 10.0;\n' + // 与上一节相比，删去这一行
+            '}\n';
+
+        // 片元着色器
+        var FSHADER_SOURCE =
+            'void main() {\n' +
+            '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+            '}\n';
+
+        function main() {
+            // 获取canvas
+            var canvas = document.getElementById('webgl');
+
+            // 获取 WebGL 执行上下文
+            var gl = getWebGLContext(canvas);
+            if (!gl) {
+                console.log('Failed to get the rendering context for WebGL');
+                return;
+            }
+
+            // 初始化着色器
+            if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+                console.log('Failed to intialize shaders.');
+                return;
+            }
+
+            // 设置顶点位置
+            var n = initVertexBuffers(gl);
+            if (n < 0) {
+                console.log('Failed to set the positions of the vertices');
+                return;
+            }
+
+            // 设置背景色
+            gl.clearColor(0, 0, 0, 1);
+
+            // 清空canvas 
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            // 绘制方形
+            // gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // 折线
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, n); // 折线
+        }
+
+        function initVertexBuffers(gl) {
+            var vertices = new Float32Array([-0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5]);
+            var n = 4; // 点的个数
+
+            // 创建缓冲区对象
+            var vertexBuffer = gl.createBuffer();
+            if (!vertexBuffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
+
+            // 将缓冲区对象绑定到目标
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+            // 向缓冲区对象中写入数据
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+            var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+            if (a_Position < 0) {
+                console.log('Failed to get the storage location of a_Position');
+                return -1;
+            }
+
+            // 将缓冲区对象分配给 a_Position 变量
+            gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+
+            // 连接 a_Position 变量与分配给他的缓冲区对象
+            gl.enableVertexAttribArray(a_Position);
+
+            return n;
+        }
+    </script>
+</body>
+
+</html>
